@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Data — never commit large market data or licensed feeds
+data/
+*.csv
+*.parquet
+*.hdf5
+*.zip
+
+# Models / training artifacts
+*.zip
+models/
+*.pkl
+*.pth
+ppo_*/
+*tensorboard*/
+
+# MT5 / MQL5 build artifacts
+*.ex5
+*.ex4
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/
