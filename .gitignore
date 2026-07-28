@@ -6,12 +6,13 @@ venv/
 env/
 .ipynb_checkpoints/
 
-# Data — never commit large market data or licensed feeds
-data/
+# Data — never commit large market data or licensed feeds.
+# (Keep the folder's PROVENANCE.md + .sha256 sidecars tracked; ignore the payloads.)
 *.csv
 *.parquet
 *.hdf5
-*.zip
+*.tkc
+*.hcc
 
 # Models / training artifacts
 *.zip
