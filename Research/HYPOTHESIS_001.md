@@ -65,3 +65,8 @@ Keep EURUSD quiet-hours reversion as the live candidate. Do NOT expand hour-pick
 on later unseen data. If the overnight edge persists out-of-sample, it is real and worth building
 a controlled strategy around; if it evaporates, it was in-sample luck and we reject it too.
 
+## GATE 2 OUTCOME (2026-07-28): REJECTED — see `gate2_report.md`.
+The edge was real in 2013–2019 (fixed block PF 1.46) but decayed to flat from 2020 (PF 0.98),
+and the adaptive walk-forward is negative out-of-sample (PF 0.90). Alpha decay. Hypothesis 001
+is closed. Not tradeable going forward.
+
