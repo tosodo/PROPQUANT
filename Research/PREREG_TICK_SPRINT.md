@@ -206,6 +206,63 @@ If all three primary criteria pass, evaluate magnitude:
 
 ---
 
+## Section 7.6: Discovery Search Budget (amendment — added pre-signature, pre-data, tightening-only)
+
+Discovery operates as a **bounded hypothesis-class search** ("bucket C"), under these binding limits:
+
+1. **One mechanism class, fixed.** The mechanism is named and written down before any discovery
+   data is loaded. All 7 evaluations are **parameter variations within that mechanism**. No
+   mode-switching, no multi-mechanism comparison.
+   **Declared mechanism: short-horizon order-flow imbalance continuation.** When trade flow over
+   a short window is strongly one-sided (buyer- vs seller-initiated ticks, classified by whether
+   the tick prints at/near ask or bid), market makers absorb the imbalance into inventory and
+   shade quotes in that direction until liquidity replenishes; imbalance therefore predicts
+   short-horizon price **continuation**, not reversion.
+   **Declared axes:** (i) imbalance window, (ii) imbalance threshold, (iii) holding horizon.
+
+2. **Budget: N = 7 evaluations, hard cap.** One evaluation = one distinct parameter set tested
+   against discovery data. A sweep of 3 values costs 3, not 1. No extensions.
+
+3. **Pre-declared grid structure.** The 7 variations form a declared grid: **one centre point plus
+   6 neighbours, each differing from the centre on exactly one axis, one step.** The grid is
+   committed to git before discovery ticks are loaded.
+
+4. **Selection rule, fixed in advance:** the winner is the variation with the **highest net
+   expectancy per trade after Run-A costs**, subject to a **minimum of 200 discovery trades**.
+   Not chosen by eye, not by total P&L.
+
+5. **Full disclosure:** all 7 results reported in the findings — winners and losers — as a core
+   methodology section, not a footnote.
+
+6. **Plateau & Persistence Check.** The selected variation advances to validation only if **both**
+   hold:
+   - **(a) Plateau.** If the winner **is the centre**: at least **2 of the 6 neighbours** show
+     positive net expectancy after Run-A costs. If the winner **is a neighbour**: the **centre**
+     must be positive **and** at least **1 other neighbour** must be positive. In both cases ≥3 of
+     the 7 points are positive and the winning region is connected to the centre. **An isolated
+     winner is rejected.**
+   - **(b) Persistence.** The selected variation shows positive net expectancy in at least **2 of
+     the 3 discovery months** (Feb 5–28, Mar 1–31, Apr 1–30). An edge concentrated in a single
+     month is not advanced.
+
+   Both tests are **mechanical** — no reviewer discretion, no post-hoc interpretation.
+
+7. **Descriptive calibration pass (permitted; bounded).** Because concrete parameter values cannot
+   be set responsibly without knowing the data's physical scale, a **descriptive-only** pass over
+   discovery ticks is permitted before the grid is committed, consistent with §5 caveat 4.
+   - **Permitted to observe:** tick arrival rate, spread distribution, price granularity/tick size,
+     session activity profile, data-quality checks.
+   - **Forbidden to compute:** any P&L, expectancy, win rate, or other outcome statistic, for any
+     strategy variation whatsoever.
+   - **Order of operations:** descriptive pass → centre point set from those statistics → **full
+     7-point grid committed to git with concrete numbers** → only then is the first P&L computed.
+     The commit timestamp is the evidence that the grid preceded any outcome.
+
+8. **Export requirement.** The tick CSV must carry **bid, ask, and MT5 tick flags**; without trade
+   flags the buyer/seller classification — and therefore the declared mechanism — is untestable.
+
+---
+
 ## Section 8: Sprint Timeline (Actual)
 
 | Day | Task | Owner | Gate |
@@ -265,8 +322,16 @@ By signing below, both parties commit to:
 > the hard stop, and the integrity constraints. I commit to this sprint as written, with no
 > edits after signature.
 
+> **Amendment §7.6 (countersigned):** Discovery is a bounded search — one fixed mechanism
+> (order-flow imbalance continuation), 3 declared parameter axes, N=7 as a centre-plus-6-neighbour
+> grid committed before data is loaded, mechanical selection rule, full disclosure of all 7
+> results, and the plateau + persistence checks (two-case formulation, isolated winners rejected).
+> A descriptive-only calibration pass is permitted to set the grid's physical scale; computing any
+> outcome statistic before the grid is committed is forbidden. Added pre-signature, pre-data, and
+> tightening-only.
+
 **Signature:** ✔ Claude (Opus), via Claude Code — Senior Dev / Research Lead
-**Date:** 2026-07-29
+**Date:** 2026-07-29 (base document + §7.6 amendment)
 
 ---
 
