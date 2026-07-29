@@ -68,7 +68,13 @@ void OnStart()
    double sp_avg = (sp_n > 0) ? sp_sum / sp_n : 0.0;
 
    //--- CHECK 2: flag histogram — the decisive one --------------------
+   // NOTE: presence of BUY/SELL is NOT sufficient. If both are set on every
+   // tick, the "classification" carries zero information. What the mechanism
+   // needs is DIRECTIONAL SEPARATION: ticks where BUY xor SELL.
    int f_bid=0, f_ask=0, f_last=0, f_vol=0, f_buy=0, f_sell=0, f_none=0;
+   int buy_only=0, sell_only=0, both_bs=0, neither_bs=0;
+   // distinct raw flag values, so the record is unambiguous
+   int  distinct_val[64]; int distinct_cnt[64]; int n_distinct=0;
    for(int i=0; i<n; i++)
    {
       uint f = (uint)t[i].flags;
@@ -77,8 +83,19 @@ void OnStart()
       if((f & TICK_FLAG_ASK)  != 0) f_ask++;
       if((f & TICK_FLAG_LAST) != 0) f_last++;
       if((f & TICK_FLAG_VOLUME)!= 0) f_vol++;
-      if((f & TICK_FLAG_BUY)  != 0) f_buy++;
-      if((f & TICK_FLAG_SELL) != 0) f_sell++;
+      bool b = ((f & TICK_FLAG_BUY)  != 0);
+      bool s = ((f & TICK_FLAG_SELL) != 0);
+      if(b) f_buy++;
+      if(s) f_sell++;
+      if(b && !s)      buy_only++;
+      else if(s && !b) sell_only++;
+      else if(b && s)  both_bs++;
+      else             neither_bs++;
+
+      bool seen=false;
+      for(int k=0; k<n_distinct; k++)
+         if(distinct_val[k] == (int)f) { distinct_cnt[k]++; seen=true; break; }
+      if(!seen && n_distinct < 64) { distinct_val[n_distinct]=(int)f; distinct_cnt[n_distinct]=1; n_distinct++; }
    }
 
    //--- CHECK 3: parses cleanly (ordering + ms granularity) -----------
@@ -99,11 +116,20 @@ void OnStart()
                DoubleToString(sp_avg, digits), DoubleToString(sp_min, digits),
                DoubleToString(sp_max, digits));
 
-   bool c2 = (f_buy > 0 || f_sell > 0);
+   // Directional separation is what matters: a majority of ticks must be
+   // classifiable as buy XOR sell. Both-always-set == no information.
+   double sep_pct = (n > 0) ? 100.0 * (buy_only + sell_only) / n : 0.0;
+   bool c2 = (sep_pct >= 50.0);
    PrintFormat("[QA] %s | CHECK 2 flags | BID=%d ASK=%d LAST=%d VOLUME=%d BUY=%d SELL=%d none=%d",
                c2 ? "PASS" : "FAIL", f_bid, f_ask, f_last, f_vol, f_buy, f_sell, f_none);
+   PrintFormat("[QA] %s | CHECK 2 separation | buy_only=%d sell_only=%d both=%d neither=%d "
+               "=> classifiable=%.2f%% (need >=50%%)",
+               c2 ? "PASS" : "FAIL", buy_only, sell_only, both_bs, neither_bs, sep_pct);
+   for(int k=0; k<n_distinct; k++)
+      PrintFormat("[QA] INFO | flags=%d count=%d (%.2f%%)",
+                  distinct_val[k], distinct_cnt[k], 100.0*distinct_cnt[k]/n);
    if(!c2)
-      PrintFormat("[QA] NOTE | no BUY/SELL flags — buyer/seller classification UNAVAILABLE. "
+      PrintFormat("[QA] NOTE | buyer/seller classification UNAVAILABLE (no directional separation). "
                   "Declared mechanism is UNTESTABLE as written. Do NOT substitute a proxy; "
                   "see Research/PRE_GRID_VALIDATION.md decision rule (i)/(ii).");
 
