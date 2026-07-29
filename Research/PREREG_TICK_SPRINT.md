@@ -342,9 +342,23 @@ By signing below, both parties commit to:
 > Phase 1/2 pass probability) and the hard stop (Wednesday EOB, Aug 5). I understand this is a
 > binary test: the tick edge either exists, or it doesn't. I'm signing this pre-reg locked, and
 > I will not move it.
+>
+> I've committed the mechanism (order-flow imbalance continuation, not bounce), the three axes
+> (imbalance window, threshold, horizon), and the 7-point grid structure (centre + 6 neighbours,
+> one axis one step). I've authorized the descriptive pass on Monday to set numeric step sizes
+> before commitment, and I commit to documenting the tick-flag validation as a hard gate.
+> No further edits. Ready for Monday.
 
-**Signature:** ________
+**Signature:** ✔ T. Osodo — Project Lead
 **Date:** 2026-07-29
+
+---
+
+**STATUS: FULLY EXECUTED 2026-07-29.** Both signatures affixed. Terms are closed. The only
+outstanding numbers are the grid's step sizes, set by the §7.6.7 descriptive pass and committed
+before any outcome statistic is computed. Gate 0 for the sprint is the pre-grid tick validation
+(`Research/PRE_GRID_VALIDATION.md`) — if it fails, the declared mechanism is untestable and the
+sprint resets rather than proceeding on a substituted classification.
 
 ---
 
